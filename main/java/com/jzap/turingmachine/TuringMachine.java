@@ -13,11 +13,14 @@ public class TuringMachine {
         mState = initialState;
         mTape = new Tape(initalData);
         mInstructions = instructions;
-
     }
 
     public void moveHead(Direction direction) {
         mTape.move(direction);
+    }
+
+    public Tape getTape() {
+        return mTape;
     }
 
 }

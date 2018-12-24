@@ -7,7 +7,7 @@ public class Tape<T> {
 
     private Node mCurrentCell = null;
 
-    private static class Node<T> {
+    public static class Node<T> {
         public Node next = null;
         public Node previous = null;
         public T data;
@@ -54,7 +54,7 @@ public class Tape<T> {
     }
 
     private void moveLeft() {
-        if(mCurrentCell.next == null) {
+        if(mCurrentCell.previous == null) {
             Node newNode = new Node();
             newNode.next = mCurrentCell;
             mCurrentCell.previous = newNode;
@@ -77,6 +77,7 @@ public class Tape<T> {
         }
         return mCurrentCell.data;
     }
+
     public void setCurrentCellValue(T data) {
         if(mCurrentCell == null) {
             mCurrentCell = new Node();
@@ -84,5 +85,11 @@ public class Tape<T> {
         mCurrentCell.data = data;
     }
 
+    public Node getCurrentCell() {
+        if(mCurrentCell == null) {
+            mCurrentCell = new Node();
+        }
+        return mCurrentCell;
+    }
 
 }
