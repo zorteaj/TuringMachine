@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TuringMachineUI {
 
     TuringMachine mTuringMachine;
 
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 mTuringMachine.moveHead(Direction.LEFT);
-                displayTape(mTuringMachine.getTape());
+                updateTape();
             }
         });
 
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 mTuringMachine.moveHead(Direction.RIGHT);
-                displayTape(mTuringMachine.getTape());
+                updateTape();
             }
         });
     }
@@ -65,26 +65,39 @@ public class MainActivity extends AppCompatActivity {
         initalData.add(true);
         initalData.add(true);
 
-        HashMap<Boolean, Instruction<Boolean>> instructions = new HashMap<>();
-        instructions.put(true, new Instruction<Boolean>(State.A, Action.WRITE, false));
-        instructions.put(true, new Instruction<Boolean>(State.B, Action.NONE, null));
-        instructions.put(false, new Instruction<Boolean>(State.A, Action.ERASE, null));
-        instructions.put(false, new Instruction<Boolean>(State.B, Action.WRITE, true));
+        HashMap<Boolean, HashMap<State, Instruction<Boolean>>> instructions = new HashMap<>();
 
-        mTuringMachine = new TuringMachine(State.A, initalData, instructions);
+        HashMap<State, Instruction<Boolean>> trueInstructions = new HashMap<>();
+        HashMap<State, Instruction<Boolean>> falseInstructions = new HashMap<>();
+        HashMap<State, Instruction<Boolean>> blankInstructions = new HashMap<>();
 
-        displayTape(mTuringMachine.getTape());
+        trueInstructions.put(State.A, new Instruction<Boolean>(Action.WRITE, false, State.HALT, Direction.RIGHT));
+        trueInstructions.put(State.B, new Instruction<Boolean>(Action.WRITE, false, State.HALT, Direction.RIGHT));
+        falseInstructions.put(State.A, new Instruction<Boolean>(Action.WRITE, true, State.B, Direction.RIGHT));
+        falseInstructions.put(State.B, new Instruction<Boolean>(Action.WRITE, true, State.HALT, Direction.RIGHT));
+        blankInstructions.put(State.A, new Instruction<Boolean>(Action.NONE, null, State.HALT, Direction.RIGHT));
+        blankInstructions.put(State.B, new Instruction<Boolean>(Action.WRITE, true, State.HALT, Direction.RIGHT));
+
+        instructions.put(true, trueInstructions);
+        instructions.put(false, falseInstructions);
+        instructions.put(null, blankInstructions);
+
+        mTuringMachine = new TuringMachine(State.A, initalData, instructions, this);
+
+        updateTape();
+
+        mTuringMachine.run();
     }
 
-    private void displayTape(Tape tape) {
+    public void updateTape() {
         String middleValue = "";
-        if(tape.getCurrentCell().data != null) {
-            middleValue = tape.getCurrentCell().data.toString();
+        if(mTuringMachine.getTape().getCurrentCell().data != null) {
+            middleValue = mTuringMachine.getTape().getCurrentCell().data.toString();
         }
         middleText.setText(middleValue);
 
         String l1Value = "";
-        Tape.Node l1Cell = tape.getCurrentCell().previous;
+        Tape.Node l1Cell = mTuringMachine.getTape().getCurrentCell().previous;
         if(l1Cell != null && l1Cell.data != null) {
             l1Value = l1Cell.data.toString();
         }
@@ -100,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
         l2Text.setText(l2Value);
 
         String r1Value = "";
-        Tape.Node r1Cell = tape.getCurrentCell().next;
+        Tape.Node r1Cell = mTuringMachine.getTape().getCurrentCell().next;
         if(r1Cell != null && r1Cell.data != null) {
             r1Value = r1Cell.data.toString();
         }

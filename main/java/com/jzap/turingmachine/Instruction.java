@@ -1,13 +1,31 @@
 package com.jzap.turingmachine;
 
 public class Instruction<T> {
-    State mState;
-    Action mAction;
-    T mData;
+    private Action mAction;
+    private T mData;
+    private State mState;
+    private Direction mDirection;
 
-    Instruction(State state, Action action, T data) {
-        mState = state;
+    Instruction(Action action, T data, State state, Direction direction) {
         mAction = action;
         mData = data;
+        mDirection = direction;
+        mState = state;
+    }
+
+    public Action getAction() {
+        return mAction;
+    }
+
+    public T getData() {
+        return mData;
+    }
+
+    public Direction getDirection() {
+        return mDirection;
+    }
+
+    public State getState() {
+        return  mState;
     }
 }
